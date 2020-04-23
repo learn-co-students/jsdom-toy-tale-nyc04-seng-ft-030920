@@ -47,13 +47,13 @@ function addToyInfoCard(toyObj) {
       },
       body: JSON.stringify({
         likes: parseInt(toyObj.likes) + 1
-        // likes: 0
       })
     })
     .then(r => r.json())
     .then(obj => {
-      // toyObj.likes = obj
+      toyObj.likes = obj.likes
       console.log(obj)
+      toyLikes.innerText = `${toyObj.likes} Likes`
     })
   })
 
@@ -66,7 +66,6 @@ function addToyInfoCard(toyObj) {
 let newToyForm = document.querySelector('.add-toy-form')
 
 newToyForm.addEventListener("submit", (evt) => {
-  // debugger
   evt.preventDefault()
   let output = evt.target
   let newName = output.name.value
@@ -87,6 +86,7 @@ newToyForm.addEventListener("submit", (evt) => {
   
   .then(r => r.json())
   .then(obj => {
+
     addToyInfoCard(obj)
   })
 
