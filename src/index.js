@@ -1,34 +1,16 @@
 let addToy = false;
 const toyCollection = document.getElementById("toy-collection")
+const toyFormContainer = document.querySelector(".add-toy-form")
 const toyUrl = "http://localhost:3000/toys"
 
-document.addEventListener("DOMContentLoaded", () => {
-  const addBtn = document.querySelector("#new-toy-btn");
-  const toyForm = document.querySelector(".container");
-  addBtn.addEventListener("click", () => {
-    // hide & seek with the form
-    addToy = !addToy;
-    if (addToy) {
-      toyForm.style.display = "block";
-    } else {
-      toyForm.style.display = "none";
-    }
-  });
-
-  fetchToys()
-});
-
 // render all existing toys
-
-function fetchToys() {
-  fetch(toyUrl)
-    .then(response => response.json())
-    .then((toyArray) => {
-      toyArray.forEach((toy) => {
-        renderToys(toy)
-    })
+fetch(toyUrl)
+  .then(response => response.json())
+  .then((toyArray) => {
+    toyArray.forEach((toy) => {
+      renderToys(toy)
   })
-}
+})
 
 function renderToys(toy) {
   let newCard = document.createElement("div")
@@ -39,11 +21,32 @@ function renderToys(toy) {
     <p>${toy.likes}</p>
     <button class="like-btn">Like <3</button>`
   toyCollection.appendChild(newCard)
+
+  // increase a toy's likes
+  const like = newCard.querySelector(".like-btn")
+  const likeText = newCard.querySelector("p")
+  const singleToyUrl = `http://localhost:3000/toys/${toy.id}`
+
+  like.addEventListener("click", () => {
+    fetch(singleToyUrl, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify({
+        likes: toy.likes + 1
+      })
+    })
+      .then(r => r.json())
+      .then((updatedToy) => {
+        toy.likes = updatedToy.likes
+        likeText.innerText = `${updatedToy.likes} likes`
+      })
+  })
 }
 
 // add a new toy
-const toyFormContainer = document.querySelector(".add-toy-form")
-
 toyFormContainer.addEventListener("submit", (evt) => {
   evt.preventDefault()
 
@@ -67,4 +70,17 @@ toyFormContainer.addEventListener("submit", (evt) => {
       renderToys(newToy)
       evt.target.reset()
     })
+})
+
+// disappearing add a new toy button
+const addBtn = document.querySelector("#new-toy-btn");
+const toyForm = document.querySelector(".container");
+
+addBtn.addEventListener("click", () => {
+  addToy = !addToy;
+  if (addToy) {
+    toyForm.style.display = "block";
+  } else {
+    toyForm.style.display = "none";
+  }
 })
