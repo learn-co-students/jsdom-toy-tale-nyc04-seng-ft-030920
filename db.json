@@ -47,6 +47,12 @@
       "name": "Little Green Men",
       "image": "http://www.pngmart.com/files/3/Toy-Story-Alien-PNG-File.png",
       "likes": -2
+    },
+    {
+      "name": "panda",
+      "image": "https://www.ikea.com/us/en/images/products/kramig-soft-toy__0162448_PE317642_S5.JPG",
+      "likes": 0,
+      "id": 9
     }
   ]
 }

@@ -1,7 +1,6 @@
 let addToy = false;
 const toyCollection = document.getElementById("toy-collection")
-// this only works with `defer` in `index.html`
-// or i can move this inside the `.addEventListener` without the `defer`
+const toyUrl = "http://localhost:3000/toys"
 
 document.addEventListener("DOMContentLoaded", () => {
   const addBtn = document.querySelector("#new-toy-btn");
@@ -16,41 +15,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // add my new functions
   fetchToys()
 });
 
-// fetching andy's toys
-// when the page loads, fetch all the existing toys
-// with the response data, create a new div for each toy and add it to the existing toy-collection div
-
-const toyUrl = "http://localhost:3000/toys"
+// render all existing toys
 
 function fetchToys() {
   fetch(toyUrl)
-  // returns a promise
     .then(response => response.json())
-    // this is a promise
     .then((toyArray) => {
       toyArray.forEach((toy) => {
         renderToys(toy)
-        
-        // this line has access to EVERYTHING inside `fetchToys()` because it's an inner code block, but the higher sections of code DO NOT...
-
-        // if the arrow function only has one argument, then u DON'T need the paranthesis
-        // look up VSCode package for ES6 syntax!!!
-        // `anfn` will automatically create an arrow function
-
-        // this `.then` statement is getting info from the previous `.then` statement
-        // anonymous function cannot be hoisted
-        // read more about callbacks and arrow functions
     })
-})
+  })
 }
 
 function renderToys(toy) {
   let newCard = document.createElement("div")
-  newCard.className = "card"
+  newCard.classList.add('card')
   newCard.innerHTML =
     `<h2>${toy.name}</h2>
     <img src="${toy.image}" class="toy-avatar"/>
@@ -59,7 +41,30 @@ function renderToys(toy) {
   toyCollection.appendChild(newCard)
 }
 
-// h2 tag with the toy's name
-// img tag with the src of the toy's image attribute and the class name "toy-avatar"
-// p tag with how many likes that toy has
-// button tag with a class "like-btn"
+// add a new toy
+const toyFormContainer = document.querySelector(".add-toy-form")
+
+toyFormContainer.addEventListener("submit", (evt) => {
+  evt.preventDefault()
+
+  let toyName = evt.target.name.value
+  let toyImage = evt.target.image.value
+
+  fetch(toyUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify({
+      name: toyName,
+      image: toyImage,
+      likes: 0
+    })
+  })
+    .then(r => r.json())
+    .then((newToy) => {
+      renderToys(newToy)
+      evt.target.reset()
+    })
+})
